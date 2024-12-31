@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -eu -o pipefail
+
+case "$1" in
+  generate)
+    exec /cmp-sidecar-scripts/generate.sh
+    ;;
+  dynamic-paramter-announcement)
+    exec /cmp-sidecar-scripts/dynamic-paramter-announcement.sh
+    ;;
+  *)
+    echo "Usage: $0 {generate|dynamic-paramter-announcement}"
+    exit 1
+    ;;
+esac
