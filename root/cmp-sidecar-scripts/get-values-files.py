@@ -5,7 +5,9 @@ import os
 import sys
 import time
 from datetime import datetime
+from pathlib import Path
 
+import dns.resolver
 import jwt
 import requests
 
@@ -35,7 +37,7 @@ class GitHubFile(object):
             self.github_token_expiry = f.read().strip()
 
     def save_github_token(self):
-        os.mkdir(self.work_dir, exist_ok=True)
+        Path.mkdir(Path(self.work_dir), parents=True, exist_ok=True)
         with open(os.path.join(self.work_dir, "github_token"), "w") as f:
             f.write(self.github_token)
 
@@ -53,14 +55,15 @@ class GitHubFile(object):
         return jwt.encode(payload, private_key, algorithm="RS256", headers=headers)
 
     def get_installation_token(self, jwt_token, installation_id):
-        url = (
-            f"https://api.github.com/app/installations/{installation_id}/access_tokens"
-        )
+        resolver = dns.resolver.Resolver()
+        ip = resolver.resolve("api.github.com")[0].to_text()
+        url = f"https://{ip}/app/installations/{installation_id}/access_tokens"
         headers = {
             "Authorization": f"Bearer {jwt_token}",
             "Accept": "application/vnd.github+json",
+            "Host": "api.github.com",
         }
-        response = requests.post(url, headers=headers)
+        response = requests.post(url, headers=headers, verify=False)
         if response.status_code == 201:
             token = response.json()["token"]
             expiry = response.json()["expires_at"]
@@ -90,15 +93,18 @@ class GitHubFile(object):
         return self.github_token
 
     def github_get_file_contents(self, org, repository, file_path, branch=None):
-        url = f"https://api.github.com/repos/{org}/{repository}/contents/{file_path}"
+        resolver = dns.resolver.Resolver()
+        ip = resolver.resolve("api.github.com")[0].to_text()
+        url = f"https://{ip}/repos/{org}/{repository}/contents/{file_path}"
         if branch:
             url += f"?ref={branch}"
 
         headers = {
             "Authorization": f"token {self.get_github_token()}",
+            "Host": "api.github.com",
         }
 
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, verify=False)
 
         if response.status_code == 200:
             file_content = response.json()
