@@ -33,8 +33,6 @@ RUN apk add --update --no-cache \
     python3 \
     yq
 
-#RUN wget https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz -O - | tar xz && mv linux-amd64/helm /usr/local/bin/helm && chmod +x /custom-tools/helm /usr/local/bin
-
 COPY --from=build /argocd-vault-plugin /usr/local/bin/argocd-vault-plugin
 COPY --from=build /helm/linux-amd64/helm /usr/local/bin/helm
 
