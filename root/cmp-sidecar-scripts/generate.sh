@@ -4,8 +4,7 @@ set -eu -o pipefail
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-# we xargs the output to make them space separated vs new line
-VALUE_FILES=$(echo "$ARGOCD_APP_PARAMETERS" | jq -r '.[] | select(.name == "values-files").array | .[] | "--values=" + .' | xargs)
+VALUE_FILES=$(echo "$ARGOCD_APP_PARAMETERS" | jq -r '.[] | select(.name == "values-files").array | .[]' | xargs)
 PARAMETERS=$(echo "$ARGOCD_APP_PARAMETERS" | jq -r '.[] | select(.name == "helm-parameters").map | to_entries | map("\(.key)=\(.value)") | .[] | "--set=" + .' | xargs) 
 CLUSTER_NAME=$(echo "$ARGOCD_APP_PARAMETERS" | jq -r '.[] | select(.name == "cluster-name").string')
 HELM_RELEASE_NAME=$(echo "$ARGOCD_APP_PARAMETERS" | jq -r '.[] | select(.name == "helm-release-name").string')
@@ -22,10 +21,6 @@ HELM_TEMPLATE_CMD_ARGS=()
 
 HELM_TEMPLATE_CMD_ARGS+=("$HELM_RELEASE_NAME" . --namespace "$ARGOCD_APP_NAMESPACE")
 
-if [ -n "$VALUE_FILES" ]; then
-    IFS=' ' read -r -a HELM_TEMPLATE_CMD_ARGS <<< "$VALUE_FILES"
-fi
-
 if [ -n "$PARAMETERS" ]; then
     IFS=' ' read -r -a HELM_TEMPLATE_CMD_ARGS <<< "$PARAMETERS"
 fi
@@ -33,6 +28,10 @@ fi
 if [ -n "$EXTERNAL_VALUES_FILES" ]; then
     "$SCRIPT_DIR/get-values-files.py" --output-dir "$EXTERNAL_FILES_DIR" "$EXTERNAL_VALUES_FILES"
 fi
+
+for value_files in $VALUE_FILES; do
+    HELM_TEMPLATE_CMD_ARGS+=(--values "$value_files")
+done
 
 # append the external values files to the arguments. The external values files have to be converted to base64
 for external_values_file in $EXTERNAL_VALUES_FILES; do
