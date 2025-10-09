@@ -1,4 +1,4 @@
-FROM alpine:3.22.1@sha256:4bcff63911fcb4448bd4fdacec207030997caf25e9bea4045fa6c8c44de311d1 AS build
+FROM alpine:3.22.2@sha256:4b7ce07002c69e8f3d704a9c5d6fd3053be500b7f1c69fc0d80990c2ad8dd412 AS build
 
 ARG AVP_VERSION=1.16.1
 ARG HELM_VERSION=3.16.2
@@ -17,7 +17,7 @@ RUN mkdir /helm \
     && tar -xvf /helm-linux-amd64.tar.gz \
     && chmod +x /helm/linux-amd64/helm /argocd-vault-plugin
 
-FROM alpine:3.22.1@sha256:4bcff63911fcb4448bd4fdacec207030997caf25e9bea4045fa6c8c44de311d1
+FROM alpine:3.22.2@sha256:4b7ce07002c69e8f3d704a9c5d6fd3053be500b7f1c69fc0d80990c2ad8dd412
 
 RUN apk add --update --no-cache \
     bash \
