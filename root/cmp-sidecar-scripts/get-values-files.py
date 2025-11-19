@@ -63,7 +63,7 @@ class GitHubFile(object):
             "Accept": "application/vnd.github+json",
             "Host": "api.github.com",
         }
-        response = requests.post(url, headers=headers, verify=False)
+        response = requests.post(url, headers=headers)
         if response.status_code == 201:
             token = response.json()["token"]
             expiry = response.json()["expires_at"]
@@ -104,7 +104,7 @@ class GitHubFile(object):
             "Host": "api.github.com",
         }
 
-        response = requests.get(url, headers=headers, verify=False)
+        response = requests.get(url, headers=headers)
 
         if response.status_code == 200:
             file_content = response.json()
