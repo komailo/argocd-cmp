@@ -43,7 +43,7 @@ if [ -z "$CLUSTER_NAME" ]; then
     echo "Error: cluster-name parameters is not set for AVP" >&2
     exit 1
 else
-    export AVP_PATH_VALIDATION="^argocd:k8s-(${CLUSTER_NAME}|global)\..+"
+    export AVP_PATH_VALIDATION="^avp-secrets:k8s-(${CLUSTER_NAME}|global)\..+"
 fi
 
 echo "Helm Template Command Args: '${HELM_TEMPLATE_CMD_ARGS[*]}'" >&2
