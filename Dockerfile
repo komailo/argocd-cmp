@@ -1,4 +1,4 @@
-FROM alpine:3.24.3@sha256:b3413572228e34bd1c9245f5565e6cd127005655e8a7899aef33d8e83255c9e6 AS build
+FROM alpine:3.24.3@sha256:be2656061b536c1883c4034790e21d0a09c5aaaf51968b89368a3c0371ea2c9a AS build
 
 ARG AVP_VERSION=1.16.1
 ARG HELM_VERSION=3.16.2
@@ -18,7 +18,7 @@ RUN mkdir /helm \
     && tar -xvf /helm-linux.tar.gz \
     && chmod +x /helm/linux-${TARGETARCH}/helm /argocd-vault-plugin
 
-FROM alpine:3.24.3@sha256:b3413572228e34bd1c9245f5565e6cd127005655e8a7899aef33d8e83255c9e6
+FROM alpine:3.24.3@sha256:be2656061b536c1883c4034790e21d0a09c5aaaf51968b89368a3c0371ea2c9a
 
 ARG TARGETARCH
 
